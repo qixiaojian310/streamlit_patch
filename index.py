@@ -1,4 +1,4 @@
-from float_echarts_button import process_markdown_and_create_buttons
+from markdown_handler import process_markdown
 
 
 def main():
@@ -8,10 +8,10 @@ As the global financial markets continue to evolve, fund management companies ha
 ## 1. BlackRock: The World’s Largest Asset Manager
 《BlackRock Inc.》, founded in 1988, is the largest investment management firm in the world, with assets under management (AUM) exceeding $9 trillion. The company’s diverse portfolio includes a range of equity, fixed-income, and alternative investment strategies. BlackRock is renowned for its leadership in sustainable investing, having launched multiple Environmental, Social, and Governance (ESG) investment funds. With a global presence, the firm continues to innovate in risk management and passive investment solutions.
 ## 2. **Vanguard Group: A Pioneer of Low-Cost Investing**
-《Vanguard Group》Founded in 1975 by John C. Bogle, Vanguard is known for its low-cost investment approach and has become synonymous with index investing. Vanguard’s philosophy of offering low-fee index funds has revolutionized the investing landscape, attracting millions of individual and institutional investors. Today, Vanguard manages over $7 trillion in assets, with a wide range of mutual funds, ETFs, and retirement solutions. The firm has been a key advocate for investor-friendly policies and is recognized for its focus on long-term value creation.
+《Vanguard Group》Founded in 1975 by John C./echarts[123] Bogle, Vanguard is known for its low-cost investment approach/itable[456] and has become synonymous with index investing. Vanguard’s philosophy of offering low-fee index funds has revolutionized the investing landscape, attracting millions of individual and institutional investors. Today, Vanguard manages over $7 trillion in assets, with a wide range of mutual funds, ETFs, and retirement solutions. The firm has been a key advocate for investor-friendly policies and is recognized for its focus on long-term value creation.
 """
     # 在 Streamlit 中渲染修改后的 Markdown 内容
-    process_markdown_and_create_buttons(markdown_text)
+    process_markdown(markdown_text)
 
     # 定义一个替换<text>标签为按钮的函数
 

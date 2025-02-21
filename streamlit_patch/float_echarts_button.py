@@ -2,34 +2,6 @@ import streamlit as st
 from streamlit_float import *
 from streamlit_echarts import st_echarts
 import streamlit as st
-import re
-
-
-# 定义一个替换<text>标签为EChartsToggleButton按钮的函数
-def process_markdown_and_create_buttons(text):
-    options = {
-        "title": {"text": "ECharts Example"},
-        "tooltip": {},
-        "xAxis": {"data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]},
-        "yAxis": {},
-        "series": [
-            {"name": "Sales", "type": "bar", "data": [120, 200, 150, 80, 70, 110, 130]}
-        ],
-    }
-    # 使用正则表达式按 <link> 分割文本
-    parts = re.split(r"(《.*?》)", text)  # 使用括号保留标签本身，非贪婪匹配
-    button_name = ""
-
-    for part in parts:
-        if part.startswith("《") and part.endswith("》"):  # 判断是否为标签
-            button_name = part[1:-1]
-            # 显示图表
-            display_echarts_with_toggle(
-                options, button_name, f"show_echart_{button_name}"
-            )
-        else:
-            # 否则直接添加文本
-            st.markdown(button_name + " " + part, unsafe_allow_html=True)
 
 
 # 定义一个函数封装组件的逻辑
