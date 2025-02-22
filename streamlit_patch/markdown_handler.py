@@ -1,12 +1,13 @@
 import re
 
 import pandas as pd
-from float_echarts_button import display_echarts_with_toggle
-from echarts_line import display_echarts
-from df_table import create_interactive_table
 import streamlit as st
+from itables.streamlit import interactive_table
+from streamlit_echarts import st_echarts
+from streamlit_float import *
 import random
 from datetime import datetime, timedelta
+
 
 float_options = {
     "title": {"text": "ECharts Example"},
@@ -59,6 +60,70 @@ def fake_table_data():
     # 创建 DataFrame
     df = pd.DataFrame(data_table)
     return df
+
+
+# 定义一个函数封装组件的逻辑
+def display_echarts_with_toggle(options, button_name="Click me", button_key=""):
+    options["title"]["text"] = button_name
+    # 初始化float功能
+    float_init()
+
+    # 使用 session_state 来保存容器显示状态
+    if button_key not in st.session_state:
+        st.session_state[button_key] = False  # 默认不显示容器
+
+    # 按钮点击时改变变量的值
+    if st.button(button_name):
+        st.session_state[button_key] = not st.session_state[button_key]
+
+    # 根据变量显示或隐藏容器
+    if st.session_state[button_key]:
+        container = st.container()
+        with container:
+            st_echarts(options=options)
+        container.float(
+            f"background-color: white; transform: translate(calc({len(button_name) + 2} * 10px), -60px); box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px;padding: 10px; position: absolute;"
+        )
+
+
+def display_echarts(data: list):
+    options = {
+        "title": {"left": "center", "text": "Large Ara Chart"},
+        "toolbox": {
+            "feature": {
+                "dataZoom": {"yAxisIndex": "none"},
+                "restore": {},
+                "saveAsImage": {},
+            }
+        },
+        "xAxis": {"type": "time", "boundaryGap": False},
+        "yAxis": {"type": "value", "boundaryGap": [0, "100%"]},
+        "dataZoom": [
+            {"type": "inside", "start": 0, "end": 20},
+            {"start": 0, "end": 20},
+        ],
+        "series": [
+            {
+                "name": "Fake Data",
+                "type": "line",
+                "smooth": True,
+                "symbol": "none",
+                "areaStyle": {},
+                "data": data,
+            }
+        ],
+    }
+    container = st.container()
+    with container:
+        st_echarts(options=options)
+
+
+def create_interactive_table(df):
+    interactive_table(
+        df,
+        caption="Countries",
+        select=True,
+    )
 
 
 def process_markdown(text):
