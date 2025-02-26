@@ -1,1 +1,1 @@
-from .markdown_handler import process_markdown
+from .markdown_handler import EchartsHandlerContainer
