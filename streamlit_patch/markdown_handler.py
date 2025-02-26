@@ -126,7 +126,7 @@ class EchartsHandlerContainer:
 
     def create_interactive_table(self, df):
         with self.once_container:
-            interactive_table(df, caption="Countries", select=True)
+            st.dataframe(df, key=uuid.uuid4())
 
     def process_markdown(self, text):
         # 使用正则表达式按 <link> 分割文本
@@ -169,6 +169,3 @@ class EchartsHandlerContainer:
             self.once_container = st.container()
         self.process_markdown(text)
         return self.container
-
-    def empty(self):
-        self.container.empty()
