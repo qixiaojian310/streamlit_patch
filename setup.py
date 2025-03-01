@@ -17,7 +17,7 @@ setup(
         "streamlit==1.40.1",  # 指定streamlit版本
         "streamlit-echarts==0.4.0",  # 指定streamlit-echarts版本
         "streamlit-float==0.3.5",  # 指定streamlit-float版本
-        "pandas==2.0.3",
-        "numpy==1.24.4",
+        "pandas<=2.0.3",
+        "numpy<=1.24.4",
     ],  # 这个项目需要的第三方库
 )
