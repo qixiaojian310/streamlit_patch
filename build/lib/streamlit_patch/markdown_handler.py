@@ -1,12 +1,13 @@
 import re
 
+import numpy as np
 import pandas as pd
 import streamlit as st
-from itables.streamlit import interactive_table
 from streamlit_echarts import st_echarts
 from streamlit_float import *
 import random
 from datetime import datetime, timedelta
+import uuid
 
 
 float_options = {
@@ -63,99 +64,115 @@ def fake_table_data():
 
 
 # 定义一个函数封装组件的逻辑
-def display_echarts_with_toggle(options, button_name="Click me", button_key=""):
-    options["title"]["text"] = button_name
-    # 初始化float功能
-    float_init()
 
-    # 使用 session_state 来保存容器显示状态
-    if button_key not in st.session_state:
-        st.session_state[button_key] = False  # 默认不显示容器
 
-    # 按钮点击时改变变量的值
-    if st.button(button_name):
-        st.session_state[button_key] = not st.session_state[button_key]
+class EchartsHandlerContainer:
+    def __init__(self):
+        self.container = st.empty()
 
-    # 根据变量显示或隐藏容器
-    if st.session_state[button_key]:
-        container = st.container()
-        with container:
+    @staticmethod
+    def float_init():
+        float_init()
+
+    def display_echarts_with_toggle(
+        self, options, button_name="Click me", button_key=""
+    ):
+        def click_button():
+            st.session_state[button_key] = not st.session_state[button_key]
+
+        options["title"]["text"] = button_name
+        # 初始化float功能
+        with self.once_container:
+            # 使用 session_state 来保存容器显示状态
+            if button_key not in st.session_state:
+                st.session_state[button_key] = False  # 默认不显示容器
+
+            # 按钮点击时改变变量的值
+            st.button(button_name, key=uuid.uuid4(), on_click=click_button)
+
+            # 根据变量显示或隐藏容器
+            if st.session_state[button_key]:
+                container = st.container(key=uuid.uuid4())
+                with container:
+                    chart_data = pd.DataFrame(
+                        np.random.randn(20, 3), columns=["a", "b", "c"]
+                    )
+                    st.line_chart(chart_data)
+                container.float(
+                    f"background-color: white; transform: translate(calc({len(button_name) + 2} * 10px), -60px); box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px;padding: 10px; position: absolute;"
+                )
+
+    def display_echarts(self, data: list):
+        options = {
+            "title": {"left": "center", "text": "Large Ara Chart"},
+            "toolbox": {
+                "feature": {
+                    "dataZoom": {"yAxisIndex": "none"},
+                    "restore": {},
+                    "saveAsImage": {},
+                }
+            },
+            "xAxis": {"type": "time", "boundaryGap": False},
+            "yAxis": {"type": "value", "boundaryGap": [0, "100%"]},
+            "dataZoom": [
+                {"type": "inside", "start": 0, "end": 20},
+                {"start": 0, "end": 20},
+            ],
+            "series": [
+                {
+                    "name": "Fake Data",
+                    "type": "line",
+                    "smooth": True,
+                    "symbol": "none",
+                    "areaStyle": {},
+                    "data": data,
+                }
+            ],
+        }
+        with self.once_container:
             st_echarts(options=options)
-        container.float(
-            f"background-color: white; transform: translate(calc({len(button_name) + 2} * 10px), -60px); box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px;padding: 10px; position: absolute;"
-        )
 
+    def create_interactive_table(self, df):
+        with self.once_container:
+            st.dataframe(df, key=uuid.uuid4())
 
-def display_echarts(data: list):
-    options = {
-        "title": {"left": "center", "text": "Large Ara Chart"},
-        "toolbox": {
-            "feature": {
-                "dataZoom": {"yAxisIndex": "none"},
-                "restore": {},
-                "saveAsImage": {},
-            }
-        },
-        "xAxis": {"type": "time", "boundaryGap": False},
-        "yAxis": {"type": "value", "boundaryGap": [0, "100%"]},
-        "dataZoom": [
-            {"type": "inside", "start": 0, "end": 20},
-            {"start": 0, "end": 20},
-        ],
-        "series": [
-            {
-                "name": "Fake Data",
-                "type": "line",
-                "smooth": True,
-                "symbol": "none",
-                "areaStyle": {},
-                "data": data,
-            }
-        ],
-    }
-    container = st.container()
-    with container:
-        st_echarts(options=options)
+    def cus_write(self, text):
+        text = re.sub(r"^-\s*", "", text, flags=re.MULTILINE)
+        text = re.sub(r"^\d+\.\s*\*\*(《.*?》)\*\*$", r"\1", text, flags=re.MULTILINE)
+        # 使用正则表达式按 <link> 分割文本
+        parts = re.split(
+            r"(《.*?》|/echarts\[[^\]]+\]|/itable\[[^\]]+\])", text, flags=re.MULTILINE
+        )  # 现在匹配标签和指令
+        button_name = ""
 
+        for part in parts:
+            if part.startswith("《") and part.endswith("》"):  # 判断是否为《text》标签
+                button_name = part[1:-1]
+                # 显示图表
+                self.display_echarts_with_toggle(
+                    float_options, button_name, f"show_echart_{button_name}"
+                )
+            elif part.startswith("/echarts[") and part.endswith(
+                "]"
+            ):  # 判断是否为/echarts[key]
+                key = part[9:-1]  # 提取key部分
+                # 调用显示图表函数
+                self.display_echarts(
+                    fake_echarts_data()
+                )  # 假设 display_echarts 需要这个key来加载不同的图表
+            elif part.startswith("/itable[") and part.endswith(
+                "]"
+            ):  # 判断是否为/itable[key]
+                key = part[8:-1]  # 提取key部分
+                # 调用显示交互表格函数
+                self.create_interactive_table(
+                    fake_table_data()
+                )  # 假设 create_interactive_table 需要这个key来加载不同的表格
+            else:
+                self.once_container.write(part, unsafe_allow_html=True)
 
-def create_interactive_table(df):
-    interactive_table(
-        df,
-        caption="Countries",
-        select=True,
-    )
-
-
-def process_markdown(text):
-    # 使用正则表达式按 <link> 分割文本
-    parts = re.split(
-        r"(《.*?》|/echarts\[[^\]]+\]|/itable\[[^\]]+\])", text
-    )  # 现在匹配标签和指令
-    button_name = ""
-
-    for part in parts:
-        if part.startswith("《") and part.endswith("》"):  # 判断是否为《text》标签
-            button_name = part[1:-1]
-            # 显示图表
-            display_echarts_with_toggle(
-                float_options, button_name, f"show_echart_{button_name}"
-            )
-        elif part.startswith("/echarts[") and part.endswith(
-            "]"
-        ):  # 判断是否为/echarts[key]
-            key = part[9:-1]  # 提取key部分
-            # 调用显示图表函数
-            display_echarts(
-                fake_echarts_data()
-            )  # 假设 display_echarts 需要这个key来加载不同的图表
-        elif part.startswith("/itable[") and part.endswith(
-            "]"
-        ):  # 判断是否为/itable[key]
-            key = part[8:-1]  # 提取key部分
-            # 调用显示交互表格函数
-            create_interactive_table(
-                fake_table_data()
-            )  # 假设 create_interactive_table 需要这个key来加载不同的表格
-        else:
-            # 否则直接添加文本
-            st.markdown(button_name + " " + part, unsafe_allow_html=True)
+    def write(self, text):
+        with self.container:
+            self.once_container = st.container()
+        self.cus_write(text)
+        return self.container
