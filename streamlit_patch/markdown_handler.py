@@ -152,7 +152,7 @@ def search_by_product_name(ccb_db_path, fund_db_path, product_name):
 
 
 class EchartsHandlerContainer:
-    def __init__(self, db_path, CCB_path):
+    def __init__(self):
         self.container = st.empty()
 
     db_path = ""
@@ -184,7 +184,11 @@ class EchartsHandlerContainer:
             if st.session_state[button_key]:
                 container = st.container(key=uuid.uuid4())
                 with container:
-                    chart_data = search_by_product_name(CCB_path, db_path, name_to_find)
+                    chart_data = search_by_product_name(
+                        EchartsHandlerContainer.CCB_path,
+                        EchartsHandlerContainer.db_path,
+                        button_name,
+                    )
                     if chart_data.empty:
                         st.warning("未找到基金数据")
                     else:
