@@ -1,6 +1,7 @@
 README.md
 setup.py
 streamlit_patch/__init__.py
+streamlit_patch/calculator.py
 streamlit_patch/markdown_handler.py
 streamlit_patch.egg-info/PKG-INFO
 streamlit_patch.egg-info/SOURCES.txt

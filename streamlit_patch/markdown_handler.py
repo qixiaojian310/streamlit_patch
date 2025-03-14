@@ -9,6 +9,8 @@ from streamlit_float import *
 import random
 from datetime import datetime, timedelta
 import uuid
+from loguru import logger
+from utils.calculator import EchartCalculator
 
 
 float_options = {
@@ -84,7 +86,9 @@ def search_fund_data(db_path, identification, start_date=None, end_date=None):
         conn = sqlite3.connect(db_path)
 
         # Build the SQL query dynamically based on provided dates
-        query = f"SELECT date, unit_net_worth, acc_net_worth FROM {fund_code}"
+        query = (
+            f"SELECT date, daily_return, unit_net_worth, acc_net_worth FROM {fund_code}"
+        )
         conditions = []
         if start_date:
             conditions.append(f"date >= '{start_date}'")
@@ -137,7 +141,7 @@ def search_by_product_name(ccb_db_path, fund_db_path, product_name):
 
         # 获取标识符并搜索基金数据
         identification = result[0]
-        print(f"找到产品 '{product_name}' 的标识符: {identification}")
+        # print(f"找到产品 '{product_name}' 的标识符: {identification}")
         return search_fund_data(fund_db_path, identification)
 
     except sqlite3.Error as e:
@@ -152,8 +156,11 @@ def search_by_product_name(ccb_db_path, fund_db_path, product_name):
 
 
 class EchartsHandlerContainer:
-    def __init__(self):
-        self.container = st.empty()
+    def __init__(self, is_last=False):
+        self.is_last = is_last
+        self.outer_container = st.container()
+        with self.outer_container:
+            self.container = st.empty()
 
     db_path = ""
     CCB_path = ""
@@ -176,19 +183,21 @@ class EchartsHandlerContainer:
             # 使用 session_state 来保存容器显示状态
             if button_key not in st.session_state:
                 st.session_state[button_key] = False  # 默认不显示容器
-
             # 按钮点击时改变变量的值
             st.button(button_name, key=uuid.uuid4(), on_click=click_button)
+            chart_data = search_by_product_name(
+                EchartsHandlerContainer.CCB_path,
+                EchartsHandlerContainer.db_path,
+                button_name,
+            )
+            if self.is_last:
+                self.calculator = EchartCalculator(button_name, chart_data)
 
             # 根据变量显示或隐藏容器
             if st.session_state[button_key]:
                 container = st.container(key=uuid.uuid4())
                 with container:
-                    chart_data = search_by_product_name(
-                        EchartsHandlerContainer.CCB_path,
-                        EchartsHandlerContainer.db_path,
-                        button_name,
-                    )
+                    logger.info(f"chart_data: {chart_data}")
                     if chart_data.empty:
                         st.warning("未找到基金数据")
                     else:
