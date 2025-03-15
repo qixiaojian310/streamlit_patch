@@ -255,14 +255,17 @@ class EchartsHandlerContainer:
             r"(《.*?》|/echarts\[[^\]]+\]|/itable\[[^\]]+\])", text, flags=re.MULTILINE
         )  # 现在匹配标签和指令
         button_name = ""
+        all_buttons = []
 
         for part in parts:
             if part.startswith("《") and part.endswith("》"):  # 判断是否为《text》标签
                 button_name = part[1:-1]
-                # 显示图表
-                self.display_echarts_with_toggle(
-                    float_options, button_name, f"show_echart_{button_name}"
-                )
+                if button_name not in all_buttons:
+                    all_buttons.append(button_name)
+                    # 显示图表
+                    self.display_echarts_with_toggle(
+                        float_options, button_name, f"show_echart_{button_name}"
+                    )
             elif part.startswith("/echarts[") and part.endswith(
                 "]"
             ):  # 判断是否为/echarts[key]
