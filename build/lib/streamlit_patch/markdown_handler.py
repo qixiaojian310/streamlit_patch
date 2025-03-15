@@ -10,7 +10,7 @@ import random
 from datetime import datetime, timedelta
 import uuid
 from loguru import logger
-from utils.calculator import EchartCalculator
+from .calculator import EchartCalculator
 
 
 float_options = {
@@ -156,8 +156,8 @@ def search_by_product_name(ccb_db_path, fund_db_path, product_name):
 
 
 class EchartsHandlerContainer:
-    def __init__(self, is_last=False):
-        self.is_last = is_last
+    def __init__(self):
+        self.is_last = False
         self.outer_container = st.container()
         with self.outer_container:
             self.container = st.empty()
@@ -282,7 +282,8 @@ class EchartsHandlerContainer:
             else:
                 self.once_container.write(part, unsafe_allow_html=True)
 
-    def write(self, text):
+    def write(self, text, is_last=False):
+        self.is_last = is_last
         with self.container:
             self.once_container = st.container()
         self.cus_write(text)

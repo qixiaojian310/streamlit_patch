@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="streamlit_patch",  # 这里是pip项目发布的名称
-    version="0.0.13",  # 版本号，数值大的会优先被pip
+    version="0.0.17",  # 版本号，数值大的会优先被pip
     keywords=("pip", "streamlit_patch"),
     description="A streamlit patch for markdown render",
     long_description="A streamlit patch for markdown render",
