@@ -6,32 +6,40 @@ import uuid
 
 
 class EchartCalculator:
-    def __init__(self, calc_name, chart_data):
+    def __init__(self, calc_name, chart_data, slider_key, render_time):
         key = str(uuid.uuid4())
-        with st.expander(f"{calc_name} Calculator", expanded=True):
+        with st.expander(f"{calc_name} Calculator", expanded=False):
             self.col1, self.col2 = st.columns([1, 3])
             with self.col1:
                 st.write("📝 Calculator")
                 invest_year = st.slider(
-                    "Invest Year", 1, 30, 1, key=f"invest_year_{calc_name}"
+                    "Invest Year",
+                    1,
+                    30,
+                    1,
+                    key=f"invest_year_{slider_key}_{render_time}",
                 )
-                capital = st.slider("Capital", 1, 100000, 1, key=f"capital_{calc_name}")
-                flat = st.slider("Flat Rate", -5, 5, 0, key=f"flat_{calc_name}")
+                capital = st.slider(
+                    "Capital", 1, 100000, 1, key=f"capital_{slider_key}_{render_time}"
+                )
+                flat = st.slider(
+                    "Flat Rate", -5, 5, 0, key=f"flat_{slider_key}_{render_time}"
+                )
 
             with self.col2:
                 st.write("📝 Calculator")
                 """
-                    计算未来 t 年后财富的变化，带有置信区间。
+                        计算未来 t 年后财富的变化，带有置信区间。
 
-                    参数:
-                    - n: 本金 (元)
-                    - t: 投资期限 (年)
-                    - i: 通货膨胀/紧缩率（百分比，如 2% 输入 2）
-                    - daily_returns: 过去一年的每日收益率列表 (小数形式)
+                        参数:
+                        - n: 本金 (元)
+                        - t: 投资期限 (年)
+                        - i: 通货膨胀/紧缩率（百分比，如 2% 输入 2）
+                        - daily_returns: 过去一年的每日收益率列表 (小数形式)
 
-                    返回:
-                    - 未来 t 年的财富曲线 (包含置信区间)
-                """
+                        返回:
+                        - 未来 t 年的财富曲线 (包含置信区间)
+                    """
                 # 计算过去一年的平均日收益率
                 chart_data = chart_data.tail(365)
                 avg_daily_return = np.mean(chart_data.daily_return)
