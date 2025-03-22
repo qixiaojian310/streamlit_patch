@@ -1,8 +1,5 @@
 import re
 
-import numpy as np
-import pandas as pd
-import sqlite3
 import streamlit as st
 import uuid
 from .calculator import EchartCalculator
@@ -32,6 +29,7 @@ class EchartsHandlerContainer:
         self,
         slider_key,
         render_time,
+        max_capital,
         button_name="Click me",
     ):
         chart_data = search_by_product_name(
@@ -50,7 +48,7 @@ class EchartsHandlerContainer:
                     st.warning("未找到基金数据")
                 else:
                     self.calculator = EchartCalculator(
-                        button_name, chart_data, slider_key, render_time
+                        button_name, chart_data, slider_key, render_time, max_capital
                     )
                     st.line_chart(
                         chart_data,
@@ -93,7 +91,7 @@ class EchartsHandlerContainer:
         self.cus_write(text)
         # print("render_time", render_time)
 
-    def show_sidebar_widget(self, render_time):
+    def show_sidebar_widget(self, render_time, max_capital=100000):
         with EchartsHandlerContainer.sidebar_container:
             once_container = st.container()
             with once_container:
@@ -103,9 +101,7 @@ class EchartsHandlerContainer:
                 # print(EchartsHandlerContainer.all_button)
                 for button_name in EchartsHandlerContainer.all_button:
                     self.display_echarts_with_toggle(
-                        button_name,
-                        render_time,
-                        button_name,
+                        button_name, render_time, max_capital, button_name
                     )
 
     def error(self, text):

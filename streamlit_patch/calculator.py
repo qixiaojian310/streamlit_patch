@@ -6,7 +6,7 @@ import uuid
 
 
 class EchartCalculator:
-    def __init__(self, calc_name, chart_data, slider_key, render_time):
+    def __init__(self, calc_name, chart_data, slider_key, render_time, max_capacity):
         key = str(uuid.uuid4())
         with st.expander(f"{calc_name} Calculator", expanded=False):
             self.col1, self.col2 = st.columns([1, 3])
@@ -20,7 +20,11 @@ class EchartCalculator:
                     key=f"invest_year_{slider_key}_{render_time}",
                 )
                 capital = st.slider(
-                    "Capital", 1, 100000, 1, key=f"capital_{slider_key}_{render_time}"
+                    "Capital",
+                    1,
+                    max_capacity,
+                    1,
+                    key=f"capital_{slider_key}_{render_time}",
                 )
                 flat = st.slider(
                     "Flat Rate", -5, 5, 0, key=f"flat_{slider_key}_{render_time}"
