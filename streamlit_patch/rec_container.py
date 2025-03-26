@@ -1,6 +1,6 @@
 import streamlit as st
 
-from .db_connector import search_by_product_name
+from .db_connector import search_fund_data
 
 
 class RecContainer:
@@ -12,13 +12,12 @@ class RecContainer:
     def __init__(self):
         rec_container = st.container()
         with rec_container.popover("💡",use_container_width=True).container(height=350):
-            data = ["华夏策略", "华安安康灵活配置A", "易增回报A"]
+            data = ["001534","002766","320001","001075","008314",'202103','020002','539003','650002','040010']
             for item in data:
                 with st.container():
                     col1, col2, col3 = st.columns([2,5,2])
                     col1.markdown(item)
-                    chart_data = search_by_product_name(
-                        RecContainer.CCB_path,
+                    chart_data = search_fund_data(
                         RecContainer.db_path,
                         item,
                     )
