@@ -32,6 +32,6 @@ class RecContainer:
                         width=400,
                         use_container_width=False,
                     )
-                    col3.checkbox("Submit")
+                    col3.checkbox("Submit", key=f"rec_{item}")
                     st.divider()
         rec_container.float("position: fixed; bottom: 150px; right: 50px; z-index: 9999; width: 4rem; height: 2rem;")
