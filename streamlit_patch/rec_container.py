@@ -15,7 +15,7 @@ class RecContainer:
             data = ["华夏策略", "华安安康灵活配置A", "易增回报A"]
             for item in data:
                 with st.container():
-                    col1, col2, col3 = st.columns([2,3,4])
+                    col1, col2, col3 = st.columns([2,5,2])
                     col1.markdown(item)
                     chart_data = search_by_product_name(
                         RecContainer.CCB_path,
@@ -28,9 +28,6 @@ class RecContainer:
                         x="date",
                         x_label=item,
                         y_label="盈利趋势",
-                        height=160,
-                        width=400,
-                        use_container_width=False,
                     )
                     col3.checkbox("Submit", key=f"rec_{item}")
                     st.divider()
